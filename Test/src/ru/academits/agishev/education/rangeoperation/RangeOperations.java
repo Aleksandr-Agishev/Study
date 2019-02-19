@@ -20,10 +20,10 @@ public class RangeOperations {
         double to2 = scanner.nextDouble();
         Range range2 = new Range(from2,to2);
 
-        System.out.println("from" + range.intervalDifference(range, range2)[0].getFrom());
-        System.out.println("to" + range.intervalDifference(range, range2)[0].getTo());
+        System.out.println("from" + range.getRangeDifference(range2)[0].getFrom());
+        System.out.println("to" + range.getRangeDifference(range2)[0].getTo());
 
-        System.out.println("Длина диапазона равна 1 = " + range.spacingLength());
+        System.out.println("Длина диапазона равна 1 = " + range.getSpacingLength());
 
 
         System.out.println("Введите число");

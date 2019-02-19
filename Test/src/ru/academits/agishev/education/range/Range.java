@@ -6,128 +6,126 @@ public class Range {
     private double from;
     private double to;
 
-    //public Range() {    }
-
     public Range(double from, double to) {
-        this.from = from >= to ? from : to;
-        this.to = from >= to ? to : from;
+        if (from <= to) {
+            this.from = from;
+            this.to = to;
+        } else {
+            this.from = to;
+            this.to = from;
+        }
     }
 
     public double getFrom() {
-        checkFromTo();
         return this.from;
     }
 
     public void setFrom(double from) {
-        this.from = from;
+        if (from <= this.to) {
+            this.from = from;
+        } else {
+            this.from = this.to;
+            this.to = from;
+        }
     }
 
     public double getTo() {
-        checkFromTo();
         return this.to;
     }
 
     public void setTo(double to) {
-        this.to = to;
-    }
-
-    public void checkFromTo() {
-        if (this.from > this.to) {
-            double exchanger = this.from;
-            this.from = this.to;
-            this.to = exchanger;
+        if (to >= this.from) {
+            this.to = to;
+        } else {
+            this.to = this.from;
+            this.from = to;
         }
     }
 
-    public double spacingLength() {
-        checkFromTo();
+    public double getSpacingLength() {
         return this.from - this.to;
     }
 
     public boolean isInside(double point) {
-        checkFromTo();
         return this.to >= point && point >= this.from;
     }
 
-    public Range intersectionLength(Range range1, Range range2) {
+    public Range getIntersectionLength(Range range) {
+        double r1From = this.from;
+        double r1To = this.to;
+        double r2From = range.getFrom();
+        double r2To = range.getTo();
+
         double intersectionFrom;
+        if (r1From <= r2From && r1To >= r2From) {
+            intersectionFrom = r2From;
+        } else if (r2From <= r1From && r2To >= r1From) {
+            intersectionFrom = r1From;
+        } else {
+            return null;
+        }
+
         double intersectionTo;
-        if (range1.isInside(range2.getFrom())) {
-            intersectionFrom = range2.getFrom();
-        } else if (range2.isInside(range1.getFrom())) {
-            intersectionFrom = range1.getFrom();
+        if (r1From <= r2To && r1To >= r2To) {
+            intersectionTo = r2To;
+        } else if (r2From <= r1To && r2To >= r1To) {
+            intersectionTo = r1To;
         } else {
             return null;
         }
-
-        if (range1.isInside(range2.getTo())) {
-            intersectionTo = range2.getTo();
-        } else if (range2.isInside(range1.getTo())) {
-            intersectionTo = range1.getTo();
-        } else {
-            return null;
-        }
-        return new Range(intersectionFrom,intersectionTo);
+        return new Range(intersectionFrom, intersectionTo);
     }
 
-    public Range[] intervalSplicing(Range range1, Range range2) {
-        if (!range1.isInside(range2.getFrom()) && !range1.isInside(range2.getFrom())) {
-            Range[] intervalSplicing = new Range[2];
-            intervalSplicing[0] = range1;
-            intervalSplicing[1] = range2;
-            return intervalSplicing;
+    public Range[] getRangeUnion(Range range) {
+        double r1From = this.from;
+        double r1To = this.to;
+        double r2From = range.getFrom();
+        double r2To = range.getTo();
+
+        if (r1To <= r2From || r2To <= r1From) {
+            return new Range[]{this,range};
         }
 
-        double intervalSplicingFrom;
-        if (range1.isInside(range2.getFrom())) {
-            intervalSplicingFrom =  range1.getFrom();
+        double rangeUnionFrom;
+        if (r1From <= r2From && r1To >= r2From) {
+            rangeUnionFrom = r1From;
         } else {
-            intervalSplicingFrom =  range2.getFrom();
+            rangeUnionFrom = r2From;
         }
 
-        double intervalSplicingTo;
-        if (range1.isInside(range2.getTo())) {
-            intervalSplicingTo =  range1.getTo();
+        double rangeUnionTo;
+        if (r1From <= r2To && r1To >= r2To) {
+            rangeUnionTo = r1To;
         } else {
-            intervalSplicingTo =  range2.getTo();
+            rangeUnionTo = r2To;
         }
 
-        Range[] intervalSplicing = new Range[1];
-        Range r = new Range(intervalSplicingFrom,intervalSplicingTo);
-        intervalSplicing[0] = r;
-        return intervalSplicing;
+        return new Range[]{new Range(rangeUnionFrom, rangeUnionTo)};
     }
 
-    public Range[] intervalDifference(Range range1, Range range2) {
-        if (!range1.isInside(range2.getFrom()) && !range1.isInside(range2.getFrom())) {
-            Range[] intervalDifference = new Range[1];
-            intervalDifference[0] = range1;
-            return intervalDifference;
+    public Range[] getRangeDifference(Range range) {
+        double r1From = this.from;
+        double r1To = this.to;
+        double r2From = range.getFrom();
+        double r2To = range.getTo();
+
+        double[] f = {1,2};
+        if (r1To <= r2From || r2To <= r1From) {
+            return new Range[]{this};
         }
 
-        if (range2.isInside(range1.getFrom()) && range2.isInside(range1.getTo())) {
+        if (r2From <= r1From && r2To >= r1To) {
             return new Range[0];
         }
 
-        if (range1.isInside(range2.getFrom()) && range1.isInside(range2.getTo())) {
-            Range[] intervalDifference = new Range[2];
-            Range r1 = new Range(range1.getFrom(),range2.getFrom());
-            intervalDifference[0] = r1;
-            Range r2 = new Range(range2.getTo(),range1.getTo());
-            intervalDifference[1] = r2;
-            return intervalDifference;
+        if (r1From < r2From && r1To > r2To) {
+            return new Range[]{new Range(r1From, r2From),new Range(r2To, r1To)};
         }
 
-        if (range2.isInside(range1.getFrom())) {
-            Range[] intervalDifference = new Range[1];
-            Range r = new Range(range2.getTo(),range1.getTo());
-            intervalDifference[0] = r;
-            return intervalDifference;
+        if (r2From <= r1From && r2To >= r1From) {
+            return new Range[]{new Range(r2To, r1To)};
         }
 
-        Range[] intervalDifference = new Range[1];
-        Range r = new Range(range1.getFrom(),range2.getFrom());
-        intervalDifference[0] = r;
-        return intervalDifference;
+        return new Range[]{new Range(r1From, r2From)};
     }
 }
