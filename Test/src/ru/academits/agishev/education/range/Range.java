@@ -1,7 +1,5 @@
 package ru.academits.agishev.education.range;
 
-import java.util.Scanner;
-
 public class Range {
     private double from;
     private double to;
@@ -42,7 +40,7 @@ public class Range {
         }
     }
 
-    public double getSpacingLength() {
+    public double getLength() {
         return this.from - this.to;
     }
 
@@ -50,68 +48,32 @@ public class Range {
         return this.to >= point && point >= this.from;
     }
 
-    public Range getIntersectionLength(Range range) {
-        double r1From = this.from;
-        double r1To = this.to;
-        double r2From = range.getFrom();
-        double r2To = range.getTo();
-
-        double intersectionFrom;
-        if (r1From <= r2From && r1To >= r2From) {
-            intersectionFrom = r2From;
-        } else if (r2From <= r1From && r2To >= r1From) {
-            intersectionFrom = r1From;
-        } else {
-            return null;
-        }
-
-        double intersectionTo;
-        if (r1From <= r2To && r1To >= r2To) {
-            intersectionTo = r2To;
-        } else if (r2From <= r1To && r2To >= r1To) {
-            intersectionTo = r1To;
-        } else {
-            return null;
-        }
-        return new Range(intersectionFrom, intersectionTo);
+    public Range getIntersection(Range range) {
+        double intersectionFrom = range.from >= this.from ? range.from : this.from;
+        double intersectionTo = this.to <= range.to ? this.to : range.to;
+        return intersectionFrom < intersectionTo ? new Range(intersectionFrom, intersectionTo) : null;
     }
 
-    public Range[] getRangeUnion(Range range) {
-        double r1From = this.from;
-        double r1To = this.to;
-        double r2From = range.getFrom();
-        double r2To = range.getTo();
-
-        if (r1To <= r2From || r2To <= r1From) {
-            return new Range[]{this,range};
+    public Range[] getUnion(Range range) {
+        double maxFrom = this.from >= range.from ? this.from : range.from;
+        double minTo = this.to <= range.to ? this.to : range.to;
+        if (maxFrom > minTo) {
+            return new Range[]{new Range(this.from, this.to), new Range(range.from, range.to)};
         }
 
-        double rangeUnionFrom;
-        if (r1From <= r2From && r1To >= r2From) {
-            rangeUnionFrom = r1From;
-        } else {
-            rangeUnionFrom = r2From;
-        }
-
-        double rangeUnionTo;
-        if (r1From <= r2To && r1To >= r2To) {
-            rangeUnionTo = r1To;
-        } else {
-            rangeUnionTo = r2To;
-        }
-
-        return new Range[]{new Range(rangeUnionFrom, rangeUnionTo)};
+        double minFrom = this.from <= range.from ? this.from : range.from;
+        double maxTo = this.to >= range.to ? this.to : range.to;
+        return new Range[]{new Range(minFrom, maxTo)};
     }
 
-    public Range[] getRangeDifference(Range range) {
+    public Range[] getDifference(Range range) {
         double r1From = this.from;
         double r1To = this.to;
-        double r2From = range.getFrom();
-        double r2To = range.getTo();
+        double r2From = range.from;
+        double r2To = range.to;
 
-        double[] f = {1,2};
         if (r1To <= r2From || r2To <= r1From) {
-            return new Range[]{this};
+            return new Range[]{new Range(this.from, this.to)};
         }
 
         if (r2From <= r1From && r2To >= r1To) {
@@ -119,7 +81,7 @@ public class Range {
         }
 
         if (r1From < r2From && r1To > r2To) {
-            return new Range[]{new Range(r1From, r2From),new Range(r2To, r1To)};
+            return new Range[]{new Range(r1From, r2From), new Range(r2To, r1To)};
         }
 
         if (r2From <= r1From && r2To >= r1From) {
