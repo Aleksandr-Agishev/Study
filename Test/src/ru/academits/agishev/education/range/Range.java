@@ -49,20 +49,20 @@ public class Range {
     }
 
     public Range getIntersection(Range range) {
-        double intersectionFrom = range.from >= this.from ? range.from : this.from;
-        double intersectionTo = this.to <= range.to ? this.to : range.to;
+        double intersectionFrom = Math.max(range.from, this.from);
+        double intersectionTo = Math.min(this.to, range.to);
         return intersectionFrom < intersectionTo ? new Range(intersectionFrom, intersectionTo) : null;
     }
 
     public Range[] getUnion(Range range) {
-        double maxFrom = this.from >= range.from ? this.from : range.from;
-        double minTo = this.to <= range.to ? this.to : range.to;
+        double maxFrom = Math.max(this.from, range.from);
+        double minTo = Math.min(this.to, range.to);
         if (maxFrom > minTo) {
             return new Range[]{new Range(this.from, this.to), new Range(range.from, range.to)};
         }
 
-        double minFrom = this.from <= range.from ? this.from : range.from;
-        double maxTo = this.to >= range.to ? this.to : range.to;
+        double minFrom = Math.min(this.from, range.from);
+        double maxTo = Math.max(this.to, range.to);
         return new Range[]{new Range(minFrom, maxTo)};
     }
 
