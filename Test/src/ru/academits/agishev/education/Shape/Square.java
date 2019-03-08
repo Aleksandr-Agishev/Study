@@ -26,4 +26,27 @@ public class Square implements Shape {
     public double getPerimeter() {
         return this.side * 4;
     }
+
+    @Override
+    public String toString() {
+        return Double.toString(side);
+    }
+
+    public boolean equals(Square o) {
+        if (o == this) {
+            return true;
+        }
+        if (o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
+        Square s = (Square) o;
+        return side == s.side;
+    }
+
+    public int hashCode() {
+        final int prime = 401;
+        int hash = 1;
+        hash = prime * hash + Double.hashCode(side);
+        return hash;
+    }
 }
