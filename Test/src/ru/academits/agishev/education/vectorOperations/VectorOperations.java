@@ -38,6 +38,7 @@ public class VectorOperations {
         Vector v7 = sum(v1, v6);
         System.out.println(v7);
         Vector v8 = difference(v7, v6);
+        System.out.println(v8);
         Vector v9 = scalarMultiplication(v1, v3);
         System.out.println(v9.length());
     }

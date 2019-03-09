@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Vector {
     private int size;
-    private double[] components = new double[size];
+    private double[] components;
 
     public int getSize() {
         return size;
