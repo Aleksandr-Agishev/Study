@@ -36,5 +36,7 @@ public class ShapeOperations {
         System.out.println(getAreaShapeNumber(shapes, 1));
         System.out.println(getPerimeterShapeNumber(shapes, 1));
         System.out.println(c1);
+        System.out.println(r1);
+        System.out.println(t1);
     }
 }

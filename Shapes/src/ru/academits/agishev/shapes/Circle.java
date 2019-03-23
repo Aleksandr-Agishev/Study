@@ -30,7 +30,7 @@ public class Circle implements Shape {
 
     @Override
     public String toString() {
-        return Double.toString(radius) + "Circle";
+        return "Circle = radius: " + radius;
     }
 
     @Override

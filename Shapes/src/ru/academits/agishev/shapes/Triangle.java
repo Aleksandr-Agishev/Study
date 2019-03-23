@@ -1,7 +1,5 @@
 package ru.academits.agishev.shapes;
 
-import java.util.Arrays;
-
 public class Triangle implements Shape {
     private double x1;
     private double x2;
@@ -34,8 +32,8 @@ public class Triangle implements Shape {
         return Math.abs(0.5 * ((this.x1 - this.x3) * (this.y2 - this.y3) - (this.x2 - this.x3) * (this.y1 - this.y3)));
     }
 
-    private double getLength(double x1, double y1, double x2, double y2) {
-        return Math.pow(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2), 0.5);
+    private static double getLength(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
     @Override
@@ -48,8 +46,7 @@ public class Triangle implements Shape {
 
     @Override
     public String toString() {
-        double[] array = {x1, x2, x3, y1, y2, y3};
-        return Arrays.toString(array) + "Triangle";
+        return "Triangle = {p1:(" + x1 + ", " + y1 + "), p2:(" + x2 + ", " + y2 + "), p3:(" + x3 + ", " + y3 + ")}";
     }
 
     @Override
@@ -61,7 +58,7 @@ public class Triangle implements Shape {
             return false;
         }
         Triangle t = (Triangle) o;
-        return x1 == t.x1 && x2 == t.x2 && x3 == t.x3 & y1 == t.y1 && y2 == t.y2 && y3 == t.y3;
+        return x1 == t.x1 && x2 == t.x2 && x3 == t.x3 && y1 == t.y1 && y2 == t.y2 && y3 == t.y3;
     }
 
     public int hashCode() {

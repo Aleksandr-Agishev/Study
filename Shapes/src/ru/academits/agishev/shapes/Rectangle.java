@@ -1,7 +1,5 @@
 package ru.academits.agishev.shapes;
 
-import java.util.Arrays;
-
 public class Rectangle implements Shape {
     private double width;
     private double height;
@@ -33,8 +31,7 @@ public class Rectangle implements Shape {
 
     @Override
     public String toString() {
-        double[] array = {width, height};
-        return Arrays.toString(array) + "Rectangle";
+        return "Rectangle = {width: " + width + ", height: " + height + "}";
     }
 
     @Override
