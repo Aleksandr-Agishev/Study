@@ -8,34 +8,35 @@ import java.util.Scanner;
 
 public class ArrayListHome {
     public static void main(String[] args) {
-        ArrayList<String> text = new ArrayList<>();
+        ArrayList<String> fileStrings = new ArrayList<>();
         try (FileReader reader = new FileReader("input.txt")) {
             Scanner scanner = new Scanner(reader);
             while (scanner.hasNext()) {
-                text.add(scanner.nextLine());
+                fileStrings.add(scanner.nextLine());
             }
         } catch (IOException e) {
             System.out.println("file not found");
         }
-        System.out.println(text.toString()); //Вывел в консоль текст из файла
+        System.out.println(fileStrings); //Вывел в консоль текст из файла
 
         ArrayList<Integer> list = new ArrayList<>();
-        for (int i = 0; i <= 51; i++) {
+        for (int i = -9; i <= 51; i++) {
             list.add(i);
         }
         removeEvenNumbers(list); //Убрал четные значения
-        System.out.println(list.toString()); //Вывел в консоль лист без четных чисел
+        System.out.println(list); //Вывел в консоль лист без четных чисел
 
         ArrayList<Integer> list2 = new ArrayList<>(Arrays.asList(1, 2, 3, 2, 4, 5, 7, 2, 4, 1, 8)); //Создал список с повторяющимися элементами
         ArrayList<Integer> list3 = getListWithoutRepetitions(list2); //Убрал все повторяющиеся элементы
-        System.out.println(list3.toString()); //Распечатал для наглядности
+        System.out.println(list3); //Распечатал для наглядности
     }
 
     private static void removeEvenNumbers(ArrayList<Integer> list) {
         for (int i = list.size() - 1; i >= 0; i--) {
-            if (i % 2 == 0) {
+            if (list.get(i) % 2 == 0) {
                 //list.remove(i); // - старый кусочек кода.
-                list.set(i, null);// Фразу "- нужно удалить из списка именно числа, которые являются четными" я воспринял как "не удалять элемент, а едалить значение, то есть присвоить значению "null". Правильно?
+                //list.set(i, null);// Фразу "- нужно удалить из списка именно числа, которые являются четными" я воспринял как "не удалять элемент, а едалить значение, то есть присвоить значению "null". Правильно?
+                list.remove(i); // - в счетчик цикла внес исправление. Теперь удаляются не цисла с четным индексом а именно четные числа.
             }
         }
     }
