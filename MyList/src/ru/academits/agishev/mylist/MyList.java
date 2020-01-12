@@ -1,16 +1,16 @@
 package ru.academits.agishev.mylist;
 
-class MyList<T> {
+public class MyList<T> {
     private int count; // нумерация с нуля. Однако, count = количеству элементов, а не индексу последнего.
     private ListItem<T> head;
 
-    private ListItem<T> getLinkOfIndex(int index) {
+    private ListItem<T> getItemByIndex(int index) {
         if (index < 0) {
-            throw new IllegalArgumentException("index must be >=0");
+            throw new IndexOutOfBoundsException("index must be >=0");
         }
 
-        if (index>=count){
-            throw new IllegalArgumentException("index must be <= " + (count-1));
+        if (index >= count) {
+            throw new IndexOutOfBoundsException("index must be <= " + (count - 1));
         }
 
         int elementNumber = 0;
@@ -20,74 +20,73 @@ class MyList<T> {
             }
             elementNumber++;
         }
-        throw new IllegalArgumentException("index must be <= " + elementNumber);
+
+        throw new IndexOutOfBoundsException("index must be <= " + elementNumber);
     }
 
-    MyList() {
-        count = 0;
+    public MyList() {
     }
 
-    MyList(T data){
+    public MyList(T data) {
         head = new ListItem<>(data);
         count = 1;
     }
-    int getSize() {
+
+    public int getSize() {
         return count;
     }
 
-    T getFirstElement() {
+    public T getFirstElement() {
+        if (count == 0) {
+            return null;
+        }
         return head.getData();
     }
 
-    T getElementOfIndex(int index) { //получение значения по указанному индексу
-        return getLinkOfIndex(index).getData();
+    public T getElementByIndex(int index) { //получение значения по указанному индексу
+        return getItemByIndex(index).getData();
     }
 
-    T setElementOfIndex(T element, int index) { //установка нового значения и получение изменяемого значения по указанному индексу
-        ListItem<T> p = getLinkOfIndex(index);
+    public T setElementByIndex(T element, int index) { //установка нового значения и получение изменяемого значения по указанному индексу
+        ListItem<T> p = getItemByIndex(index);
         T data = p.getData();
         p.setData(element);
         return data;
     }
 
-    T removeElementOfIndex(int index) { // удаление элемента по идексу
+    public T removeElementByIndex(int index) { // удаление элемента по идексу
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("index must be >=0");
+        }
+
         if (index >= count) {
-            throw new IllegalArgumentException("index must be <= " + count);
+            throw new IndexOutOfBoundsException("index must be <= " + count);
         }
 
         if (index == 0) {
             return removeFirstElement();
         }
-        if (index == count - 1) {
-            ListItem<T> linkPrev = getLinkOfIndex(index - 1);
-            T data = linkPrev.getNext().getData();
-            getLinkOfIndex(index - 1).setNext(null);
-            count--;
-            return data;
-        }
 
-        ListItem<T> linkPrev = getLinkOfIndex(index - 1);
+        ListItem<T> linkPrev = getItemByIndex(index - 1);
         ListItem<T> link = linkPrev.getNext();
         T data = link.getData();
         linkPrev.setNext(link.getNext());
-        link.setNext(null);
         count--;
         return data;
     }
 
-    void insertElementToStart(T element) {
-        if (count == 0) {
-            head = new ListItem<>(element, null);
-            count++;
-            return;
-        }
+    public void insertElementToStart(T element) {
         head = new ListItem<>(element, head);
         count++;
     }
 
-    void insertElementOfIndex(T element, int index) {
+    public void insertElementByIndex(int index, T element) {
         if (index < 0) {
-            throw new IllegalArgumentException("index must be >=0");
+            throw new IndexOutOfBoundsException("index must be >=0");
+        }
+
+        if (index >= count) {
+            throw new IndexOutOfBoundsException("index must be <= " + count);
         }
 
         if (index == 0) {
@@ -95,47 +94,40 @@ class MyList<T> {
             return;
         }
 
-        if (index == count) {
-            ListItem<T> p = new ListItem<>(element, null);
-            getLinkOfIndex(index - 1).setNext(p);
-            count++;
-            return;
-        }
-
-        ListItem<T> prevLink = getLinkOfIndex(index - 1);
+        ListItem<T> prevLink = getItemByIndex(index - 1);
         ListItem<T> newLink = new ListItem<>(element, prevLink.getNext());
         prevLink.setNext(newLink);
         count++;
     }
 
-    Boolean removeFirstElementOfValue(T value) {
+    public boolean remove(T value) {
         int elementIndex = 0;
         for (ListItem<T> p = head; p != null; p = p.getNext()) {
-            if (p.getData().equals(value)) {
-                removeElementOfIndex(elementIndex);
+            if (p.getData().equals(value) || p.getData() == value) {
+                removeElementByIndex(elementIndex);
                 return true;
             }
+            elementIndex++;
         }
         return false;
     }
 
-    T removeFirstElement() {
+    public T removeFirstElement() {
+        if (count == 0) {
+            throw new IllegalArgumentException("list is empty");
+        }
+
         if (count > 1) {
             T data = head.getData();
             head = head.getNext();
             count--;
             return data;
         }
-        if (count == 1) {
-            T data = head.getData();
-            head = null;
-            count--;
-            return data;
-        }
+
         return null;
     }
 
-    void turn() {
+    public void turn() {
         if (count <= 1) {
             return;
         }
@@ -152,26 +144,35 @@ class MyList<T> {
         head = iteratorNext;
     }
 
-    MyList<T> copy() {
-        MyList<T> newMyList = new MyList<>(head.getData());
-        ListItem<T> newElement = newMyList.head;
+    public MyList<T> copy() {
+        if (count == 0) {
+            return new MyList<>();
+        }
+
+        MyList<T> newList = new MyList<>(head.getData());
+        ListItem<T> newElement = newList.head;
         for (ListItem<T> p = head.getNext(); p != null; p = p.getNext()) {
             ListItem<T> nextElement = new ListItem<>(p.getData());
             newElement.setNext(nextElement);
             newElement = nextElement;
-            newMyList.count++;
+            newList.count++;
         }
-        return newMyList;
+        return newList;
     }
 
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        for(ListItem<T> p = head; p!=null;p=p.getNext()){
-            sb.append(p.getData().toString())
-            .append(";");
+        for (ListItem<T> p = head; p != null; p = p.getNext()) {
+            if (p.getData() != null) {
+                sb.append(p.getData().toString())
+                        .append(";");
+            } else {
+                sb.append("null")
+                        .append(";");
+            }
         }
         sb.append("=")
-        .append(count);
+                .append(count);
         return sb.toString();
     }
 }
