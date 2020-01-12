@@ -1,70 +1,68 @@
 package ru.academits.agishev.lambda;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LambdaTest {
     public static void main(String[] args) {
-        List<Persons> personsList = Arrays.asList(new Persons("Иван", 15),
-                new Persons("Степан", 25),
-                new Persons("Петр", 27),
-                new Persons("Афросий", 18),
-                new Persons("Ерёма", 43),
-                new Persons("Евклид", 155),
-                new Persons("Профокл", 15),
-                new Persons("Кузьма", 10),
-                new Persons("Фома", 64),
-                new Persons("Иван", 4),
-                new Persons("Степан", 15),
-                new Persons("Ерёма", 41));
+        List<Person> personsList = Arrays.asList(new Person("Иван", 15),
+                new Person("Степан", 25),
+                new Person("Петр", 27),
+                new Person("Афросий", 18),
+                new Person("Ерёма", 43),
+                new Person("Евклид", 155),
+                new Person("Профокл", 15),
+                new Person("Кузьма", 10),
+                new Person("Фома", 64),
+                new Person("Иван", 4),
+                new Person("Степан", 15),
+                new Person("Ерёма", 41));
 
         // А. получить список уникальных имен
-        List<String> listName1 = personsList.stream().map(Persons::getName).distinct().collect(Collectors.toList());
+        List<String> distinctNamesList = personsList.stream()
+                .map(Person::getName)
+                .distinct()
+                .collect(Collectors.toList());
 
         // Б. вывести список уникальных имен в формате Имена: Иван, Петр, Сергей
-        boolean checkOfStartList = true;
-        for (String e : listName1) {
-            if (checkOfStartList) {
-                System.out.print(e);
-                checkOfStartList = false;
-            } else {
-                System.out.print(", " + e);
-            }
-        }
-        System.out.println(".");
+        System.out.println(String.join(", ", distinctNamesList) + ".");
 
         // В. получить список людей младше 18 лет, посчитать для них средний возраст
-        List<Persons> listName2 = personsList.stream().filter(p -> p.getAge() < 18).collect(Collectors.toList());
+        List<Person> youngPersonsList = personsList.stream()
+                .filter(p -> p.getAge() < 18)
+                .collect(Collectors.toList());
+        youngPersonsList.forEach(x -> System.out.print(x.getName() + "=" + x.getAge() + ", "));
+        System.out.println();
 
-        double average = 0;
-        int countOfPersons = 0;
-        for (Persons persons : listName2) {
-            average += persons.getAge();
-            countOfPersons++;
-        }
-        average = average / countOfPersons;
-        System.out.println("average Age = " + average);
+        int sumAge = personsList.stream()
+                .filter(p -> p.getAge() < 18)
+                .mapToInt(Person::getAge)
+                .sum();
+
+        double countAge = personsList.stream() // при указании int и применении mapToInt почему то выдает ошибку
+                .filter(p -> p.getAge() < 18)
+                .mapToInt(Person::getAge)
+                .count(); //Попытка взять не count а average выдает ошибку при любой комбинации countAge (int и double) и mapToInt и mapToDouble
+
+        double averageAge = sumAge / countAge;
+        System.out.println("averageAge Age = " + averageAge);
 
         // Г. при помощи группировки получить Мар, в котором ключи - имена, а значения - средний возраст
-        Map<String, List<Persons>> personsAverageAge = personsList.stream().collect(Collectors.groupingBy(Persons::getName));
+        Map<String, Double> personsAverageAge = personsList.stream()
+                .collect(Collectors.groupingBy(Person::getName, Collectors.averagingDouble(Person::getAge)));
 
-        HashMap<String, Double> mapNames = new HashMap<>();
-        personsAverageAge.forEach((key, value) -> {
-            double averageAge = 0;
-            int countOfPersonsOfNames = 0;
-            for (Persons persons : value) {
-                averageAge += persons.getAge();
-                countOfPersonsOfNames++;
-            }
-            averageAge = averageAge / countOfPersonsOfNames;
-            mapNames.put(key, averageAge);
-        });
-
-        //Map<String, Double> persons3 = personsList.stream().collect(Collectors.toMap((Persons p) -> p.getName(), (Persons p) -> (double) p.getAge())); - пытался реализовать через лямбды - не смог
-        //Map<String, Double> persons3 = personsList.stream().collect(Collectors.groupingBy((Persons p)->p.getName()).toMap()); - пытался реализовать через лямбды - не смог
+        distinctNamesList.forEach(e -> System.out.print(e + "=" + personsAverageAge.get(e) + ", "));
+        System.out.println();
 
         // Д. получить людей, возраст которых от 20 до 45, вывести в консоль их имена в порядке убывания возраста
-        List<Persons> persons4 = personsList.stream().filter(p -> p.getAge() <= 45 && p.getAge() >= 20).sorted(Comparator.comparingInt(Persons::getAge)).collect(Collectors.toList());
-        persons4.forEach(e -> System.out.print(e.getName() + "=" + e.getAge() + " "));
+        List<Person> personsListFrom20To45 = personsList.stream()
+                .filter(p -> p.getAge() <= 45 && p.getAge() >= 20)
+                .sorted(Comparator.comparingInt(Person::getAge))//(p1,p2)->p2.getAge()-p1.getAge()
+                .collect(Collectors.toList());
+
+        personsListFrom20To45.forEach(e -> System.out.print(e.getName() + "=" + e.getAge() + " "));
     }
 }
